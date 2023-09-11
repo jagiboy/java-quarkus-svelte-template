@@ -3,7 +3,7 @@
   </script>
   
   <div class="input-one">
-  <TextInput style="color:black;"
+  <TextInput 
     labelText="Prompt"
     placeholder="Enter a prompt..."
   />
@@ -13,7 +13,7 @@
   <style>
     .input-one{
     /* padding: 1rem; */
-    color: black;
+    
     }
 
 

@@ -6,14 +6,45 @@ import Textinput from './components/Textinput.svelte';
 import Textarea from './components/Textarea.svelte';
 import Dropdownprov from './components/Dropdownprov.svelte';
 import Dropdownllm from './components/Dropdownllm.svelte';
+import { Content } from 'carbon-components-svelte';
+import { onMount } from 'svelte';
+import Textareaprompt from './components/Textareaprompt.svelte';
+    import Theme from './components/Theme.svelte';
+    import { beforeUpdate } from 'svelte';
 
 let var1:string = "world";
 let id='';
+let provider:string = "AWS";
+
+
+let llmmodels;
+let models=[];
+
+let modelendpoint:string = "http://k8s-aimodels-appingre-be0018898d-13702781.us-east-1.elb.amazonaws.com/nodered/models?provider=";
+
+onMount(async () => {
+        const response = await fetch(modelendpoint);
+        const provmodels = await response.json();
+        llmmodels = provmodels;
+        console.log(llmmodels);
+        models = llmmodels[provider];
+    })
+
+
+function handleMessage(event) {
+  models=[];
+  console.log(event.detail);
+  provider=event.detail.selectedItem.text;
+  models = llmmodels[provider];
+  console.log(models);
+  
+}
 </script>
 
 <div class="grid-container">
     <div class="header">
         <Header />
+        
     </div>
     
     <div class="left" >
@@ -27,21 +58,28 @@ let id='';
     </div>
     <div class="middle" >
 
-        <Textinput />
+        <Textareaprompt />
         <br/>
         <Textarea />
 
 
     </div>  
     <div class="right">
-        <Dropdownprov/>
+
+        <Dropdownprov on:select={handleMessage} />
         <br/>
-        <Dropdownllm/>
+         <Dropdownllm models={models}/> 
 
     </div>
     
     <div class="footer">
-      <p>Footer</p>
+      <p>
+        <Content>
+            This is an experimental UI screen for the ATOM platform
+            
+        </Content>
+      </p>
+      
     </div>
   </div>
 
@@ -68,7 +106,7 @@ let id='';
     /* The grid container */
     .grid-container {
       display: grid;
-      grid-template-columns: 300px 900px 250px;
+      grid-template-columns: 300px 1fr 300px;
       grid-template-rows: 48px 700px 100px;
       /* grid-template-areas: 
         'header header header header header header' 
@@ -108,9 +146,9 @@ let id='';
     /* Style the footer */
     
     .footer {
-      grid-column: 1 /span 3;
+      grid-column: 2;
       grid-row: 3;
-      background-color: #f1f1f1;
+      
       padding: 10px;
       text-align: center;
     }
